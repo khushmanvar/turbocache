@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"turbocache/lib/core/store"
@@ -11,11 +10,11 @@ import (
 
 var RESP_NIL []byte = []byte("$-1\r\n")
 
-func evalPING(args []string, c io.ReadWriter) error {
+func evalPING(args []string, c io.ReadWriter) *types.Exception {
 	var b []byte
 
 	if len(args) >= 2 {
-		return errors.New("ERR wrong number of arguments for 'ping' command")
+		return types.NewException("ERR wrong number of arguments for 'ping' command")
 	}
 
 	if len(args) == 0 {
@@ -25,7 +24,11 @@ func evalPING(args []string, c io.ReadWriter) error {
 	}
 
 	_, err := c.Write(b)
-	return err
+	if err != nil {
+		utils.WriteErrToConsole("Fail to write")
+	}
+
+	return nil
 }
 
 func evalSET(args []string, c io.ReadWriter) *types.Exception {
@@ -43,9 +46,9 @@ func evalSET(args []string, c io.ReadWriter) *types.Exception {
 	return nil
 }
 
-func evalGET(args []string, c io.ReadWriter) (*types.Record, *types.Exception) {
+func evalGET(args []string, c io.ReadWriter) *types.Exception {
 	if len(args) < 2 {
-		return nil, types.NewException("invalid args")
+		return types.NewException("invalid args")
 	}
 
 	var key = args[0]
@@ -54,7 +57,7 @@ func evalGET(args []string, c io.ReadWriter) (*types.Record, *types.Exception) {
 	rcd = store.Get(key)
 	c.Write(encode(rcd.Value, false))
 
-	return rcd, nil
+	return nil
 }
 
 func encode(value interface{}, isSimple bool) []byte {
@@ -71,10 +74,14 @@ func encode(value interface{}, isSimple bool) []byte {
 	}
 }
 
-func EvalAndRespond(cmd *types.TurboCommand, c io.ReadWriter) error {
+func EvalAndRespond(cmd *types.TurboCommand, c io.ReadWriter) *types.Exception {
 	switch cmd.Cmd {
 	case "PING":
 		return evalPING(cmd.Args, c)
+	case "GET":
+		return evalGET(cmd.Args, c)
+	case "SET":
+		return evalSET(cmd.Args, c)
 	default:
 		return evalPING(cmd.Args, c)
 	}
