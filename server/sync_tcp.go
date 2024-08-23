@@ -7,8 +7,8 @@ import (
 	"net"
 	"strconv"
 	"turbocache/config"
+	"turbocache/lib/core/cmd"
 	"turbocache/lib/core/types"
-	"turbocache/lib/core/utils"
 )
 
 func RunSyncTCPServer() {
@@ -35,7 +35,7 @@ func RunSyncTCPServer() {
 
 		for {
 			// over the socket, continuously read the command and print it out
-			cmd, err := utils.ReadCommand(c)
+			cmd, err := cmd.ReadCommand(c)
 			if err != nil {
 				c.Close()
 				con_clients -= 1
@@ -54,8 +54,8 @@ func respondError(err error, c io.ReadWriter) {
 	c.Write([]byte(fmt.Sprintf("-%s\r\n", err)))
 }
 
-func respond(cmd *types.TurboCommand, c io.ReadWriter) {
-	err := utils.EvalAndRespond(cmd, c)
+func respond(cmmd *types.TurboCommand, c io.ReadWriter) {
+	err := cmd.EvalAndRespond(cmmd, c)
 	if err != nil {
 		respondError(err, c)
 	}

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 	"turbocache/config"
-	"turbocache/lib/core/utils"
+	"turbocache/lib/core/cmd"
 )
 
 var conClients int = 0
@@ -48,7 +48,7 @@ func handleConnection(conn net.Conn) {
 	mu.Unlock()
 
 	// Instead of using FDCommand, read directly from the connection
-	cmd, err := utils.ReadCommandFromConn(conn)
+	cmd, err := cmd.ReadCommandFromConn(conn)
 	if err != nil {
 		log.Println("Error reading command:", err)
 		mu.Lock()

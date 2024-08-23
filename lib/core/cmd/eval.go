@@ -1,10 +1,12 @@
-package utils
+package cmd
 
 import (
 	"errors"
 	"fmt"
 	"io"
+	"turbocache/lib/core/store"
 	"turbocache/lib/core/types"
+	"turbocache/lib/core/utils"
 )
 
 func evalPING(args []string, c io.ReadWriter) error {
@@ -22,6 +24,21 @@ func evalPING(args []string, c io.ReadWriter) error {
 
 	_, err := c.Write(b)
 	return err
+}
+
+func evalSET(args []string, c io.ReadWriter) *types.Exception {
+	if len(args) < 3 {
+		return types.NewException("wrong number of arguments")
+	}
+
+	var key, value string
+
+	key, value = args[0], args[1]
+
+	store.Put(key, store.NewRecord(value, utils.GetExpiresAt(utils.StrToInt(args[2]))))
+	c.Write([]byte("+OK\r\n"))
+
+	return nil
 }
 
 func encode(value interface{}, isSimple bool) []byte {
