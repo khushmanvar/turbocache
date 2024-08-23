@@ -3,11 +3,11 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"net"
+	"io"
 	"turbocache/lib/core/types"
 )
 
-func evalPING(args []string, c net.Conn) error {
+func evalPING(args []string, c io.ReadWriter) error {
 	var b []byte
 
 	if len(args) >= 2 {
@@ -35,7 +35,7 @@ func encode(value interface{}, isSimple bool) []byte {
 	return []byte{}
 }
 
-func EvalAndRespond(cmd *types.TurboCommand, c net.Conn) error {
+func EvalAndRespond(cmd *types.TurboCommand, c io.ReadWriter) error {
 	switch cmd.Cmd {
 	case "PING":
 		return evalPING(cmd.Args, c)

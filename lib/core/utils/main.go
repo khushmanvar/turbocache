@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"io"
 	"net"
 	"strings"
 	"turbocache/lib/core/types"
 )
 
-func ReadCommand(c net.Conn) (*types.TurboCommand, error) {
+func ReadCommand(c io.ReadWriter) (*types.TurboCommand, error) {
 	// TODO: Max read in one shot is 512 bytes
 	// To allow input > 512 bytes, then repeated read until
 	// we get EOF or designated delimiter
@@ -33,3 +34,4 @@ func Respond(cmd string, c net.Conn) error {
 	}
 	return nil
 }
+

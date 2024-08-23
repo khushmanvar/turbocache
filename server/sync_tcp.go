@@ -50,11 +50,11 @@ func RunSyncTCPServer() {
 	}
 }
 
-func respondError(err error, c net.Conn) {
+func respondError(err error, c io.ReadWriter) {
 	c.Write([]byte(fmt.Sprintf("-%s\r\n", err)))
 }
 
-func respond(cmd *types.TurboCommand, c net.Conn) {
+func respond(cmd *types.TurboCommand, c io.ReadWriter) {
 	err := utils.EvalAndRespond(cmd, c)
 	if err != nil {
 		respondError(err, c)
