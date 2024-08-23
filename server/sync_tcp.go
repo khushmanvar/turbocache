@@ -50,8 +50,8 @@ func RunSyncTCPServer() {
 	}
 }
 
-func respondError(err error, c io.ReadWriter) {
-	c.Write([]byte(fmt.Sprintf("-%s\r\n", err)))
+func respondError(exp *types.Exception, c io.ReadWriter) {
+	c.Write([]byte(fmt.Sprintf("-%s\r\n", exp)))
 }
 
 func respond(cmmd *types.TurboCommand, c io.ReadWriter) {
