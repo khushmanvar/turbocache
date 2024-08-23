@@ -41,6 +41,20 @@ func evalSET(args []string, c io.ReadWriter) *types.Exception {
 	return nil
 }
 
+func evalGET(args []string, c io.ReadWriter) (*types.Record, *types.Exception) {
+	if len(args) < 2 {
+		return nil, types.NewException("invalid args")
+	}
+
+	var key = args[0]
+	var rcd *types.Record
+
+	rcd = store.Get(key)
+	c.Write([]byte("+OK\r\n"))
+
+	return rcd, nil
+}
+
 func encode(value interface{}, isSimple bool) []byte {
 	switch v := value.(type) {
 	case string:
