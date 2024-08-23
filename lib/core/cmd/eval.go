@@ -9,6 +9,8 @@ import (
 	"turbocache/lib/core/utils"
 )
 
+var RESP_NIL []byte = []byte("$-1\r\n")
+
 func evalPING(args []string, c io.ReadWriter) error {
 	var b []byte
 
@@ -50,7 +52,7 @@ func evalGET(args []string, c io.ReadWriter) (*types.Record, *types.Exception) {
 	var rcd *types.Record
 
 	rcd = store.Get(key)
-	c.Write([]byte("+OK\r\n"))
+	c.Write(encode(rcd.Value, false))
 
 	return rcd, nil
 }
@@ -62,8 +64,11 @@ func encode(value interface{}, isSimple bool) []byte {
 			return []byte(fmt.Sprintf("+%s\r\n", v))
 		}
 		return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(v), v))
+	case int64:
+		return []byte(fmt.Sprintf(":%d\r\n", v))
+	default:
+		return RESP_NIL
 	}
-	return []byte{}
 }
 
 func EvalAndRespond(cmd *types.TurboCommand, c io.ReadWriter) error {
