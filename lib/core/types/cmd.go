@@ -1,9 +1,11 @@
 package types
 
-import "syscall"
+import (
+	"syscall"
+)
 
 type TurboCommand struct {
-	Cmd string
+	Cmd  string
 	Args []string
 }
 
@@ -12,9 +14,9 @@ type FDCommand struct {
 }
 
 func (f FDCommand) Write(b []byte) (int, error) {
-	return syscall.Write(f.Fd, b)
+	return syscall.Write(syscall.Handle(f.Fd), b)
 }
 
 func (f FDCommand) Read(b []byte) (int, error) {
-	return syscall.Read(f.Fd, b)
+	return syscall.Read(syscall.Handle(f.Fd), b)
 }
