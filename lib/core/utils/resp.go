@@ -79,7 +79,7 @@ func readArray(data []byte) (interface{}, int, error) {
 
 	var elems []interface{} = make([]interface{}, count)
 	for i := range elems {
-		elem, delta, err := DecodeHelper(data[pos:])
+		elem, delta, err := DecodeOne(data[pos:])
 		if err != nil {
 			return nil, 0, err
 		}
@@ -89,7 +89,7 @@ func readArray(data []byte) (interface{}, int, error) {
 	return elems, pos, nil
 }
 
-func DecodeHelper(data []byte) (interface{}, int, error) {
+func DecodeOne(data []byte) (interface{}, int, error) {
 	if len(data) == 0 {
 		return nil, 0, errors.New("no data")
 	}
@@ -112,6 +112,21 @@ func Decode(data []byte) (interface{}, error) {
 	if len(data) == 0 {
 		return nil, errors.New("no data")
 	}
-	value, _, err := DecodeHelper(data)
+	value, _, err := DecodeOne(data)
 	return value, err
+}
+
+func DecodeArrayString(data []byte) ([]string, error) {
+	value, err := Decode(data)
+	if err != nil {
+		return nil, err
+	}
+
+	ts := value.([]interface{})
+	tokens := make([]string, len(ts))
+	for i := range tokens {
+		tokens[i] = ts[i].(string)
+	}
+
+	return tokens, nil
 }

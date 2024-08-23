@@ -1,11 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"strconv"
 	"turbocache/config"
+	"turbocache/lib/core/types"
 	"turbocache/lib/core/utils"
 )
 
@@ -43,10 +45,18 @@ func RunSyncTCPServer() {
 				}
 				log.Println("err", err)
 			}
-			log.Println("command", cmd)
-			if err = utils.Respond(cmd, c); err != nil {
-				log.Print("err write:", err)
-			}
+			respond(cmd, c)
 		}
+	}
+}
+
+func respondError(err error, c net.Conn) {
+	c.Write([]byte(fmt.Sprintf("-%s\r\n", err)))
+}
+
+func respond(cmd *types.TurboCommand, c net.Conn) {
+	err := utils.EvalAndRespond(cmd, c)
+	if err != nil {
+		respondError(err, c)
 	}
 }
